@@ -54,6 +54,13 @@ async function run() {
       res.send(team);
     });
 
+    //get orders api
+    app.get("/orders", async (req, res) => {
+      const cursor = ordersCollection.find({});
+      const orders = await cursor.toArray();
+      res.send(orders);
+    });
+
     //----------------------//
     // post area
     //----------------------//
