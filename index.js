@@ -27,10 +27,9 @@ async function run() {
     const teamCollection = database.collection("team-members");
     const ordersCollection = database.collection("orders");
     const usersCollection = database.collection("users");
+    const reviewsCollection = database.collection("reviews");
 
-    //----------------------//
     // get area
-    //----------------------//
 
     // get all services
     app.get("/services", async (req, res) => {
@@ -62,6 +61,21 @@ async function run() {
       res.send(orders);
     });
 
+    //get reviews
+    app.get("/reviews", async (req, res) => {
+      const cursor = reviewsCollection.find({});
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+    });
+
+    //get single  review
+    app.get("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const review = await reviewsCollection.findOne(query);
+      res.send(review);
+    });
+
     // get a specific order
     app.get("/orders/:id", async (req, res) => {
       const id = req.params.id;
@@ -82,14 +96,19 @@ async function run() {
       res.json({ admin: isAdmin });
     });
 
-    //----------------------//
     // post area
-    //----------------------//
 
     //post orders
     app.post("/orders", async (req, res) => {
       const order = req.body;
       const result = await ordersCollection.insertOne(order);
+      res.json(result);
+    });
+
+    // post review
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
       res.json(result);
     });
 
@@ -99,6 +118,15 @@ async function run() {
       const result = await usersCollection.insertOne(user);
       res.json(result);
     });
+
+    // post a new service
+    app.post("/services", async (req, res) => {
+      const car = req.body;
+      const result = await servicesCollection.insertOne(car);
+      res.json(result);
+    });
+
+    //update area
 
     // upsert user
     app.put("/users", async (req, res) => {
@@ -123,9 +151,7 @@ async function run() {
       res.json(result);
     });
 
-    //----------------------//
     // delete area
-    //----------------------//
 
     //delete order
     app.delete("/orders/:id", async (req, res) => {
@@ -135,11 +161,19 @@ async function run() {
       res.json(result);
     });
 
-    // delete cars api
+    // delete service
     app.delete("/services/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await servicesCollection.deleteOne(query);
+      res.json(result);
+    });
+
+    // delete review of a user
+    app.delete("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await reviewsCollection.deleteOne(query);
       res.json(result);
     });
   } finally {
