@@ -3,12 +3,24 @@ const { MongoClient } = require("mongodb");
 const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
 const cors = require("cors");
+const fileUpload = require("express-fileupload");
 
 const app = express();
+
+// Set CSP headers
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'none'; font-src 'self' https://digital-service-server.vercel.app");
+  next();
+});
+
+// Serve your HTML files
+app.use(express.static('index.js'));
+
 
 // middleware area
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload());
 
 const port = process.env.PORT || 5000;
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.sx8wv.mongodb.net/algo-digital?retryWrites=true&w=majority`;
